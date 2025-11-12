@@ -7,7 +7,7 @@ class ShowtimeBase(BaseModel):
     movie_id: int
     start_time: datetime
     hall_number: str | None = None
-    available_seats: int | None = 0
+    capacity: int | None = 0
     
 
 class ShowtimeCreate(ShowtimeBase):
