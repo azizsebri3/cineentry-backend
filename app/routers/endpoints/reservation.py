@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
-from app.models.reservation import Reservation as ReservationModel
-from app.models.showtime import Showtime as ShowtimeModel
+from app.core.deps import get_current_user
+from app.core.security import require_role
 from app.schemas.reservation import ReservationResponse, ReservationCreate
 from app.services.reservation_service import (
     cancel_reservation_service,
@@ -13,34 +13,48 @@ from app.services.reservation_service import (
     delete_reservation_service,
 )
 
+router = APIRouter(prefix="/reservations", tags=["Reservations"])
 
-router = APIRouter()
-
-# Get all reservations
+# Admin-only: see all reservations
 @router.get("/", response_model=List[ReservationResponse])
-def get_reservations(db: Session = Depends(get_db)):
+def get_reservations(
+    db: Session = Depends(get_db),
+    current_user = Depends(require_role("admin")) # que l admin peut voir toutes les réservations 
+):
     return get_all_reservations(db)
 
-
-# Create a new reservation
+# User: create reservation
 @router.post("/", response_model=ReservationResponse)
-def create_reservation(reservation: ReservationCreate, db: Session = Depends(get_db)):
-    return create_reservation_service(reservation, db)
+def create_reservation(
+    reservation: ReservationCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    return create_reservation_service(reservation, db, current_user.id)
 
-# Get a reservation by ID
+# User: get their own reservation
 @router.get("/{reservation_id}", response_model=ReservationResponse)
-def get_reservation(reservation_id: int, db: Session = Depends(get_db)):
-    return get_reservation_service(reservation_id, db)
+def get_reservation(
+    reservation_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    return get_reservation_service(reservation_id, db, current_user)
 
-# Delete a reservation by ID
+# Admin-only: delete any reservation
 @router.delete("/{reservation_id}", response_model=ReservationResponse)
-def delete_reservation(reservation_id: int, db: Session = Depends(get_db)):
+def delete_reservation(
+    reservation_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(require_role("admin")) #que l admin peut supprimer une réservation
+):
     return delete_reservation_service(reservation_id, db)
 
-
+# User: cancel their own reservation
 @router.patch("/{reservation_id}/cancel")
-def cancel_reservation(reservation_id: int, db: Session = Depends(get_db)):
-    """
-    Annule une réservation (si le showtime est encore à venir).
-    """
-    return cancel_reservation_service(reservation_id, db)
+def cancel_reservation(
+    reservation_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user) # que l utilisateur peut annuler sa propre réservation
+):
+    return cancel_reservation_service(reservation_id, db, current_user)

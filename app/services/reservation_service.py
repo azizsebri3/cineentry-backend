@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from datetime import datetime, timezone
 
 from app.models.reservation import Reservation as ReservationModel
 from app.models.showtime import Showtime as ShowtimeModel
@@ -70,7 +71,6 @@ def delete_reservation_service(reservation_id: int, db: Session):
     return reservation
 
 
-from datetime import datetime, timezone
 
 def cancel_reservation_service(reservation_id: int, db: Session):
     # 1️⃣ Récupérer la réservation
