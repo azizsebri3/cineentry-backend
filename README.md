@@ -72,7 +72,7 @@ app/
 │ ├── showtime.py
 │ ├── reservation.py
 │ └── auth.py
-├── schemas/ # Pydantic DTOs (request/response)
+├── schemas/ # Pydantic models (request/response)
 ├── services/ # Business logic (service layer)
 │ ├── auth_service.py
 │ ├── movies_service.py
@@ -82,13 +82,13 @@ app/
 ├── utils/ # Helpers (seat generation, DB setup)
 │ ├── database.py
 │ └── main.py
-├── sql/ # SQL files or schema references
-├── tests/
-    ├── unit/ # Unit tests (services)
-    ├── integration/ # Integration/API tests
-├── docs/
-│    └── erd.png 
-└── conftest.py # Pytest fixtures
+├── sql/ # Raw SQL or schema references
+├── tests/ # Test suite
+│ ├── unit/ # Unit tests (services)
+│ ├── integration/ # Integration/API tests
+│ └── conftest.py # Pytest fixtures
+└── docs/
+    └── erd.png # Database diagram
 ```
 ---
 
