@@ -6,6 +6,7 @@ from passlib.context import CryptContext
 import os
 from dotenv import load_dotenv
 
+from app.core.config import Settings
 from app.core.deps import get_current_user
 
 load_dotenv()
@@ -29,7 +30,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, os.getenv("SECRET_KEY"), algorithm=os.getenv("ALGORITHM"))
     return encoded_jwt
 
 

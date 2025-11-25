@@ -13,7 +13,7 @@ from app.services.reservation_service import (
     delete_reservation_service,
 )
 
-router = APIRouter(prefix="/reservations", tags=["Reservations"])
+router = APIRouter()
 
 # Admin-only: see all reservations
 @router.get("/", response_model=List[ReservationResponse])
@@ -30,7 +30,7 @@ def create_reservation(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    return create_reservation_service(reservation, db, current_user.id)
+    return create_reservation_service(reservation, db, current_user.username)
 
 # User: get their own reservation
 @router.get("/{reservation_id}", response_model=ReservationResponse)
@@ -57,4 +57,4 @@ def cancel_reservation(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user) # que l utilisateur peut annuler sa propre réservation
 ):
-    return cancel_reservation_service(reservation_id, db, current_user)
+    return cancel_reservation_service(reservation_id, db)

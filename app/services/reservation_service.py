@@ -11,7 +11,8 @@ def get_all_reservations(db: Session):
     return db.query(ReservationModel).all()
 
 
-def create_reservation_service(reservation_data, db: Session):
+def create_reservation_service(reservation_data, db: Session, user_name: str):
+    #1. ici verifier que le showtime existe 
     showtime = db.query(ShowtimeModel).filter(
         ShowtimeModel.id == reservation_data.showtime_id
     ).first()
@@ -39,7 +40,11 @@ def create_reservation_service(reservation_data, db: Session):
         raise HTTPException(status_code=400, detail="Seat already reserved") 
     
     
-    db_reservation = ReservationModel(**reservation_data.model_dump())
+    db_reservation = ReservationModel(
+        **reservation_data.model_dump(),
+        user_name=user_name,
+        status="confirmed"
+    )
     db.add(db_reservation)
     db.commit()
     db.refresh(db_reservation)
@@ -90,6 +95,8 @@ def cancel_reservation_service(reservation_id: int, db: Session):
         raise HTTPException(status_code=404, detail="Showtime not found")
 
     # On compare les dates (UTC)
+    print(showtime.start_time)
+    print(datetime.now(timezone.utc))
     if showtime.start_time <= datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Cannot cancel past reservations")
 

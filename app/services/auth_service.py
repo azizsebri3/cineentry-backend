@@ -32,7 +32,7 @@ def login_user(db: Session, email: str, password: str) -> dict:
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Invalid credentials")
 
-    if not verify_password(password, user.password):
+    if not verify_password(password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     access_token = create_access_token({"sub": user.email})

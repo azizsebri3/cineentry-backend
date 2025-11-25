@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -9,4 +9,4 @@ class Role(Base):
     name = Column(String(50), unique=True, nullable=False)
     description = Column(String(255), nullable=True)
 
-    users = relationship("User", back_populates="role")
+    

@@ -16,7 +16,7 @@ from ...services.movies_service import (
     get_movies_by_showtime_date_service
 )
 
-router = APIRouter(prefix="/movies", tags=["Movies"])
+router = APIRouter()
 
 @router.get("/", response_model=List[Movie])
 def get_movies(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):

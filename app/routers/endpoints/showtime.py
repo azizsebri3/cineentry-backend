@@ -13,7 +13,7 @@ from app.services.showtime_service import (
     delete_showtime_service
 )
 
-router = APIRouter(prefix="/showtimes", tags=["Showtimes"])
+router = APIRouter()
 
 @router.get("/", response_model=List[Showtime])
 def get_showtimes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
